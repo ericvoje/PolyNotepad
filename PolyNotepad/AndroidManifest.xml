@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.ericvoje.polynotepad.NoteActivity"
+            android:label="@string/title_activity_note"
+            android:parentActivityName="com.ericvoje.polynotepad.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ericvoje.polynotepad.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
