@@ -1,8 +1,14 @@
 package com.ericvoje.polynotepad;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -39,8 +45,8 @@ public class NoteActivity extends Activity {
 		} else {
 			// Load note
 			filename = intent.getStringExtra("NOTE_FILE");
+			loadNote(filename);
 		}
-		loadNote(filename);
 	}
 
 	/**
@@ -63,13 +69,6 @@ public class NoteActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		}
@@ -81,16 +80,45 @@ public class NoteActivity extends Activity {
 		File file = new File(filename);
 		if (file.exists()) {
 			// Load file only if it exists
-		}
+			StringBuffer outStringBuf = new StringBuffer();
+			String inputLine = "";
+			FileInputStream inputStream;
 
+			try {
+				inputStream = openFileInput(filename);
+
+				InputStreamReader isr = new InputStreamReader(inputStream);
+				BufferedReader inBuff = new BufferedReader(isr);
+				while ((inputLine = inBuff.readLine()) != null) {
+					outStringBuf.append(inputLine);
+					outStringBuf.append("\n");
+				}
+				inputStream.read();
+				inputStream.close();
+				Toast toast = Toast.makeText(getApplicationContext(), filename
+						+ " Loaded", Toast.LENGTH_LONG);
+				toast.show();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	// Saves note to given file
 	public void saveNote(View view) {
+		String string = noteText.getText().toString();
+		FileOutputStream outputStream;
 
-		Toast toast = Toast.makeText(getApplicationContext(), filename
-				+ " Saved", Toast.LENGTH_LONG);
-		toast.show();
+		try {
+			outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+			outputStream.write(string.getBytes());
+			outputStream.close();
+			Toast toast = Toast.makeText(getApplicationContext(), filename
+					+ " Saved", Toast.LENGTH_LONG);
+			toast.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
